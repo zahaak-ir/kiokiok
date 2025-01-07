@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Extractor</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #1e88e5;
+            color: #ffffff;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #1565c0;
+        }
+        textarea {
+            width: 80%;
+            height: 150px;
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ffffff;
+            border-radius: 5px;
+            background-color: #333333;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Server Extractor</h1>
+        <input type="text" id="serverInput" placeholder="Enter server string">
+        <button onclick="extractInfo()">Extract IP and Port</button>
+        <textarea id="resultBox" readonly></textarea>
+    </div>
+
+<script>
+    let ipRanges = [];
+    const ipRangesUrl = 'https://raw.githubusercontent.com/vfarid/cf-ip-scanner-py/main/ipv4.txt'; // Replace with the actual URL
+
+    function loadIPRanges() {
+        fetch(ipRangesUrl)
+            .then(response => response.text())
+            .then(data => {
+                // Split the data into individual ranges
+                ipRanges = data.split('\n').filter(Boolean).map(range => {
+                    const [base, max] = range.split('/');
+                    return { base, max: parseInt(max, 10) };
+                });
+                console.log('IP ranges loaded:', ipRanges); // Debug output
+                alert('IP ranges loaded successfully!');
+            })
+            .catch(error => {
+                console.error('Error loading IP ranges:', error);
+                alert('Failed to load IP ranges. Please check the URL and try again.');
+            });
+    }
+
+    function getRandomIp() {
+        if (ipRanges.length === 0) {
+            console.warn('No IP ranges loaded. Returning default IP: 0.0.0.0');
+            return '0.0.0.0'; // Default if no ranges are loaded
+        }
+
+        const range = ipRanges[Math.floor(Math.random() * ipRanges.length)];
+        const baseParts = range.base.split('.').map(Number);
+        const octet = Math.floor(Math.random() * (range.max + 1));
+
+        if (baseParts.length !== 4) {
+            console.error('Invalid base IP:', range.base);
+            return '0.0.0.0'; // Return default if base IP is invalid
+        }
+
+        const randomIp = `${baseParts[0]}.${baseParts[1]}.${baseParts[2]}.${octet}`;
+        console.log('Generated IP:', randomIp); // Debug output
+        return randomIp;
+    }
+
+    function extractInfo() {
+        const serverString = document.getElementById('serverInput').value.trim();
+        const base64Regex = /^(vmess|vless):\/\/([a-zA-Z0-9+/=]+)$/;
+        let decodedString = '';
+        let ip = '';
+        let port = '';
+        let isBase64 = false;
+        let results = '';
+        const uniqueIPs = new Set(); // Use a Set to ensure unique IPs
+
+        const matchBase64 = serverString.match(base64Regex);
+
+        if (matchBase64) {
+            try {
+                decodedString = atob(matchBase64[2]);
+                const jsonData = JSON.parse(decodedString);
+                ip = jsonData.add || '';
+                port = jsonData.port || '';
+                isBase64 = true;
+            } catch (e) {
+                console.error('Error decoding base64:', e);
+                document.getElementById('resultBox').value = 'Invalid base64 server string';
+                return;
+            }
+        } else {
+            const regex = /^(vless|vmess):\/\/[^@]+@([^:]+):(\d+)/;
+            const match = serverString.match(regex);
+            if (match) {
+                ip = match[2];
+                port = match[3];
+            } else {
+                document.getElementById('resultBox').value = 'Invalid server string';
+                return;
+            }
+        }
+
+        while (uniqueIPs.size < 150) {
+            const newIp = getRandomIp();
+            uniqueIPs.add(newIp); // Add IP to the Set, ensuring uniqueness
+        }
+
+        // Convert Set to Array to iterate over unique IPs
+        const ipArray = Array.from(uniqueIPs);
+        console.log('Unique IPs generated:', ipArray); // Debug output
+
+        for (let i = 0; i < 150; i++) {
+            let tempString = serverString;
+            if (isBase64) {
+                const jsonData = JSON.parse(decodedString);
+                jsonData.add = ipArray[i]; // Use unique IPs
+                tempString = matchBase64[1] + '://' + btoa(JSON.stringify(jsonData));
+            } else {
+                tempString = tempString.replace(ip, ipArray[i]); // Use unique IPs
+            }
+            results += tempString + '\n';
+        }
+
+        document.getElementById('resultBox').value = results.trim();
+    }
+
+    // Load IP ranges as soon as the page loads
+    window.onload = loadIPRanges;
+</script>
+
+
+</body>
+</html>

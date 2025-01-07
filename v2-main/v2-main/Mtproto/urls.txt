@@ -1,0 +1,5 @@
+tg://proxy?server=5.161.118.126&port=443&secret=ee2100e547d760f0e3b53eb430c871f112676f6f676c652e636f6d
+tg://proxy?server=135.181.145.105&port=4443&secret=FgMBAgABAAH8AwOG4kw63Q
+tg://proxy?server=i.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.l.ll.forevernew.space&port=443&secret=ee00000000000000000000000000000000746865677561726469616e2e636f6d
+tg://proxy?server=195.201.253.38&port=443&secret=ee000000000000000000000000000000007765622e62616c652e6972
+tg://proxy?server=cloudaaflare.com.nokia.com.co.uk.do_yo.want_to.this.www.microsoft.com.there_is_no.pldaace_like.locllhost.www.bing.com.count_with_me.cyou.com.now_sudo.rm_rf.ddns.net.i_am.the_inte-et.special_hsz---hsz.newcarda.space&port=443&secret=ee000000000000000000000000000000007765622e62616c652e696f
